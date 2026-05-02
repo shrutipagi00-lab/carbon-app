@@ -806,7 +806,7 @@ function CompanyDashboard({ co, creditPrice, setCreditPrice }: {
             <p className={`text-2xl font-bold mb-1 ${!buyIsCheaper ? "text-green-600" : "text-gray-400"}`}>₹{co.investCost} Cr</p>
             <p className="text-xs text-gray-400">One-time capex · Payback ~{co.payback} yrs</p>
           </div>
-        }
+        </div>}
 
         {/* Year-by-year strategy — Indian DCs only */}
         {!co.isForeign && <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 mb-4">
@@ -823,7 +823,7 @@ function CompanyDashboard({ co, creditPrice, setCreditPrice }: {
               );
             })}
           </div>
-        }
+        </div>}
 
         <div className="space-y-3">
           <div className="rounded-xl p-4 border border-gray-200 bg-gray-50">
