@@ -346,50 +346,165 @@ const LightTooltip = ({ active, payload, label }: any) => {
 // ── Landing ──────────────────────────────────────────────────────────────
 function LandingPage({ onEnter }: { onEnter: () => void }) {
   const [vis, setVis] = useState(false);
+  const [ticker, setTicker] = useState(0);
+  const tickerItems = [
+    "🟢 ESCert price: ₹800–₹1,200/cert (IEX FY23)",
+    "🔴 CBAM enforcement: 1 January 2026",
+    "🟡 CCTS projected: ₹1,500/cert by FY25",
+    "🔵 Total sector deficit: 18.04M ESCerts",
+    "🟠 Reliance CBAM exposure: ₹81 Cr/yr",
+    "🟢 ArcelorMittal benchmark: 1.89 tCO₂/tcs",
+    "🔴 EU ETS price: ~₹6,200/tCO₂ (FY23)",
+    "🟡 CCTS projected: ₹6,000/cert by FY30",
+  ];
   useEffect(() => { setTimeout(() => setVis(true), 100); }, []);
+  useEffect(() => {
+    const t = setInterval(() => setTicker(p => (p + 1) % tickerItems.length), 2500);
+    return () => clearInterval(t);
+  }, []);
+
+  const companies16 = [
+    { name: "Tata Steel", country: "🇮🇳", intensity: "2.48", sector: "Steel" },
+    { name: "JSW Steel", country: "🇮🇳", intensity: "2.31", sector: "Steel" },
+    { name: "Bhushan Power", country: "🇮🇳", intensity: "2.55", sector: "Steel" },
+    { name: "ArcelorMittal", country: "🌍", intensity: "1.89", sector: "Steel" },
+    { name: "Reliance Ind.", country: "🇮🇳", intensity: "3.12", sector: "Petrochem" },
+    { name: "Indian Oil", country: "🇮🇳", intensity: "2.87", sector: "Petrochem" },
+    { name: "Bharat Petro.", country: "🇮🇳", intensity: "2.94", sector: "Petrochem" },
+    { name: "BASF SE", country: "🌍", intensity: "N/A", sector: "Petrochem" },
+    { name: "Hindalco", country: "🇮🇳", intensity: "8.40", sector: "Aluminium" },
+    { name: "Vedanta Alum.", country: "🇮🇳", intensity: "9.10", sector: "Aluminium" },
+    { name: "NALCO", country: "🇮🇳", intensity: "8.95", sector: "Aluminium" },
+    { name: "Rio Tinto", country: "🌍", intensity: "7.80", sector: "Aluminium" },
+    { name: "DCW Limited", country: "🇮🇳", intensity: "1.45", sector: "Chloro-Alkali" },
+    { name: "GHCL Limited", country: "🇮🇳", intensity: "1.52", sector: "Chloro-Alkali" },
+    { name: "Grasim Ind.", country: "🇮🇳", intensity: "1.38", sector: "Chloro-Alkali" },
+    { name: "Olin Corp.", country: "🌍", intensity: "N/A", sector: "Chloro-Alkali" },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex flex-col items-center justify-center px-6">
-      <div className={`max-w-3xl w-full text-center transition-all duration-1000 ${vis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 text-green-700 text-xs font-semibold px-4 py-2 rounded-full mb-8">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-          MBA Corporate Finance · FY 2022–2026 · Real Data
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Top nav bar */}
+      <div className="border-b border-gray-100 px-8 py-3 flex items-center justify-between bg-white shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center">
+            <span className="text-white text-xs font-black">CC</span>
+          </div>
+          <span className="font-bold text-gray-800 text-sm">Carbon Credit Intelligence Platform</span>
         </div>
-        <h1 className="text-5xl font-bold text-gray-800 mb-4 tracking-tight leading-tight">
-          Carbon Credit<br /><span className="text-green-600">Intelligence Platform</span>
-        </h1>
-        <p className="text-gray-500 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-          Real-data carbon compliance analysis for 12 Indian Designated Consumers across 4 sectors. PAT compliance · ESCert economics · CBAM exposure · FY22–FY26 trends.
-        </p>
-        <div className="grid grid-cols-4 gap-4 mb-10">
-          {[
-            { value: "12", label: "Indian DCs" },
-            { value: "4", label: "Foreign Benchmarks" },
-            { value: "FY22–26", label: "Data Range" },
-            { value: "₹1,554 Cr", label: "Total Invest Cost" },
-          ].map(s => (
-            <div key={s.label} className="bg-white border border-green-200 rounded-xl p-4 text-center shadow-sm">
-              <p className="text-2xl font-bold text-green-700 mb-1">{s.value}</p>
-              <p className="text-xs text-gray-500">{s.label}</p>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-gray-500 border border-gray-200 px-3 py-1 rounded-full">MBA Corporate Finance</span>
+          <span className="text-xs text-green-700 border border-green-200 bg-green-50 px-3 py-1 rounded-full font-semibold">FY 2022–2026</span>
+        </div>
+      </div>
+
+      {/* Live ticker */}
+      <div className="bg-green-600 text-white text-xs py-2 px-6 flex items-center gap-3 overflow-hidden">
+        <span className="font-bold whitespace-nowrap">LIVE DATA</span>
+        <span className="w-px h-3 bg-white/40" />
+        <span className="transition-all duration-500">{tickerItems[ticker]}</span>
+      </div>
+
+      {/* Hero */}
+      <div className={`flex-1 flex flex-col items-center justify-center px-6 py-16 transition-all duration-1000 ${vis ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <div className="max-w-4xl w-full">
+          {/* Badge */}
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-xs font-bold px-5 py-2.5 rounded-full shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              16 Companies · 4 Sectors · Real Published Data · CBAM 2026 Alert
             </div>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-3 justify-center mb-10">
-          {[
-            { icon: "⚙", name: "Iron & Steel", cos: "Tata · JSW · Bhushan", color: "border-blue-300 bg-blue-50" },
-            { icon: "🛢", name: "Petrochemicals", cos: "Reliance · IOC · BPCL", color: "border-amber-300 bg-amber-50" },
-            { icon: "⚡", name: "Aluminium", cos: "Hindalco · Vedanta · NALCO", color: "border-purple-300 bg-purple-50" },
-            { icon: "🧪", name: "Chloro-Alkali", cos: "DCW · GHCL · Grasim", color: "border-teal-300 bg-teal-50" },
-          ].map(s => (
-            <div key={s.name} className={`border rounded-xl px-4 py-3 text-left ${s.color}`}>
-              <p className="text-xs font-bold text-gray-700 mb-0.5">{s.icon} {s.name}</p>
-              <p className="text-xs text-gray-500">{s.cos}</p>
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-center text-6xl font-black text-gray-900 mb-4 tracking-tight leading-none">
+            Carbon Credit
+            <span className="block text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #16a34a, #0284c7)" }}>
+              Intelligence Platform
+            </span>
+          </h1>
+          <p className="text-center text-gray-500 text-lg max-w-2xl mx-auto mb-12 leading-relaxed">
+            PAT compliance analytics · ESCert buy-vs-invest strategy · CBAM 2026 exposure · FY22–FY26 emission trends for 12 Indian DCs + 4 global benchmarks
+          </p>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-5 gap-3 mb-10">
+            {[
+              { value: "16", label: "Companies", sub: "12 Indian + 4 Global", color: "text-green-600", bg: "bg-green-50 border-green-200" },
+              { value: "4", label: "Sectors", sub: "Steel · Petrochem · Al · CA", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
+              { value: "FY22–26", label: "Data Range", sub: "5-year trend", color: "text-purple-600", bg: "bg-purple-50 border-purple-200" },
+              { value: "₹1,554Cr", label: "Total Invest", sub: "12 Indian DCs", color: "text-orange-600", bg: "bg-orange-50 border-orange-200" },
+              { value: "Jan 2026", label: "CBAM Starts", sub: "EU enforcement", color: "text-red-600", bg: "bg-red-50 border-red-200" },
+            ].map(s => (
+              <div key={s.label} className={`border rounded-2xl p-4 text-center shadow-sm ${s.bg}`}>
+                <p className={`text-2xl font-black mb-0.5 ${s.color}`}>{s.value}</p>
+                <p className="text-xs font-bold text-gray-700">{s.label}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{s.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* All 16 companies grid */}
+          <div className="mb-10">
+            <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">All 16 Companies — Indian DCs + Global Benchmarks</p>
+            <div className="grid grid-cols-4 gap-2">
+              {companies16.map((co, i) => (
+                <div key={i} className={`rounded-xl border px-3 py-2.5 flex items-center justify-between ${co.country === "🌍" ? "bg-blue-50 border-blue-200" : "bg-gray-50 border-gray-200"}`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">{co.country}</span>
+                    <div>
+                      <p className={`text-xs font-bold ${co.country === "🌍" ? "text-blue-700" : "text-gray-700"}`}>{co.name}</p>
+                      <p className="text-xs text-gray-400">{co.sector}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-gray-600">{co.intensity}</p>
+                    <p className="text-xs text-gray-400">tCO₂/t</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+            <p className="text-center text-xs text-gray-400 mt-2">🇮🇳 = Indian Designated Consumer (PAT Scheme) · 🌍 = Foreign Benchmark (EU ETS / CBAM)</p>
+          </div>
+
+          {/* Sector strips */}
+          <div className="grid grid-cols-4 gap-3 mb-10">
+            {[
+              { icon: "⚙", name: "Iron & Steel", indian: "Tata · JSW · Bhushan", foreign: "ArcelorMittal 🌍", color: "border-blue-300 bg-blue-50", badge: "bg-blue-600" },
+              { icon: "🛢", name: "Petrochemicals", indian: "Reliance · IOC · BPCL", foreign: "BASF SE 🌍", color: "border-amber-300 bg-amber-50", badge: "bg-amber-500" },
+              { icon: "⚡", name: "Aluminium", indian: "Hindalco · Vedanta · NALCO", foreign: "Rio Tinto 🌍", color: "border-purple-300 bg-purple-50", badge: "bg-purple-600" },
+              { icon: "🧪", name: "Chloro-Alkali", indian: "DCW · GHCL · Grasim", foreign: "Olin Corp. 🌍", color: "border-teal-300 bg-teal-50", badge: "bg-teal-600" },
+            ].map(s => (
+              <div key={s.name} className={`border rounded-2xl p-4 ${s.color} shadow-sm`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">{s.icon}</span>
+                  <span className="text-xs font-black text-gray-700">{s.name}</span>
+                </div>
+                <p className="text-xs text-gray-600 mb-2">{s.indian}</p>
+                <p className="text-xs font-bold text-blue-600">{s.foreign}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div className="flex flex-col items-center gap-4">
+            <button onClick={onEnter}
+              className="bg-green-600 hover:bg-green-700 text-white font-black text-lg px-16 py-5 rounded-2xl transition-all shadow-xl hover:scale-105 hover:shadow-green-200">
+              Enter Platform →
+            </button>
+            <div className="flex items-center gap-6 text-xs text-gray-400">
+              <span>✓ Real published data</span>
+              <span>✓ AI-powered chat</span>
+              <span>✓ Live sensitivity analysis</span>
+              <span>✓ CBAM calculator</span>
+            </div>
+          </div>
+
+          {/* Bottom disclaimer */}
+          <p className="text-center text-gray-300 text-xs mt-8">
+            MBA Corporate Finance · Navrachana University Vadodara · Faculty Guide: Hitesh Bhatiya · Academic prototype — not for investment decisions
+          </p>
         </div>
-        <button onClick={onEnter} className="bg-green-600 hover:bg-green-700 text-white font-bold text-base px-10 py-4 rounded-2xl transition-all shadow-lg hover:scale-105">
-          Enter Platform →
-        </button>
-        <p className="text-gray-400 text-xs mt-4">FY 2022-23 base data · Excel v4 incorporated · Academic prototype</p>
       </div>
     </div>
   );
@@ -1457,7 +1572,7 @@ export default function Home() {
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">📊 Emission Tracker — FY22 to FY26</h1>
                 <p className="text-gray-500 text-sm">All 12 Indian DCs + 4 Foreign Benchmarks</p>
               </div>
-              <EmissionTracker companies={COMPANIES} />
+              <EmissionTracker companies={ALL_COMPANIES} />
               <div className="mt-6"><YearByYearTable companies={COMPANIES} /></div>
             </div>
           )}
@@ -1499,6 +1614,41 @@ export default function Home() {
 
               <div className="mb-6"><SensitivitySlider creditPrice={creditPrice} setCreditPrice={setCreditPrice} /></div>
               <div className="mb-6"><LiveCostTable companies={COMPANIES} creditPrice={creditPrice} /></div>
+              <div className="mb-4">
+                <p className="text-xs font-bold text-blue-700 uppercase tracking-widest mb-3">🌍 Foreign Benchmarks — FY22–FY26 Emissions (Mt CO₂)</p>
+                <div className="rounded-xl border border-blue-200 bg-white overflow-hidden shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead><tr className="border-b border-gray-100 bg-blue-50">
+                        <th className="text-left py-2 px-4 text-gray-500 font-semibold">Company</th>
+                        <th className="text-left py-2 px-4 text-gray-500 font-semibold">Sector</th>
+                        <th className="text-left py-2 px-4 text-gray-500 font-semibold">Country</th>
+                        <th className="text-right py-2 px-4 text-gray-500">FY22</th>
+                        <th className="text-right py-2 px-4 text-blue-600 font-bold">FY23</th>
+                        <th className="text-right py-2 px-4 text-gray-500">FY24</th>
+                        <th className="text-right py-2 px-4 text-gray-500">FY25</th>
+                        <th className="text-right py-2 px-4 text-gray-500">FY26</th>
+                        <th className="text-right py-2 px-4 text-green-600 font-bold">Intensity</th>
+                      </tr></thead>
+                      <tbody>
+                        {FOREIGN_BENCHMARKS.map((b, i) => (
+                          <tr key={b.id} className={`border-b border-gray-50 hover:bg-blue-50/40 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/30"}`}>
+                            <td className="py-2.5 px-4"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full" style={{ backgroundColor: b.color }} /><span className="font-semibold text-blue-700">{b.name} 🌍</span></div></td>
+                            <td className="py-2.5 px-4 text-gray-500">{b.sector}</td>
+                            <td className="py-2.5 px-4 text-gray-500">{b.country}</td>
+                            <td className="py-2.5 px-4 text-right text-gray-600">{b.fy22}</td>
+                            <td className="py-2.5 px-4 text-right font-bold text-blue-600">{b.fy23}</td>
+                            <td className="py-2.5 px-4 text-right text-gray-500">{b.fy24}</td>
+                            <td className="py-2.5 px-4 text-right text-gray-500">{b.fy25}</td>
+                            <td className="py-2.5 px-4 text-right text-gray-500">{b.fy26}</td>
+                            <td className="py-2.5 px-4 text-right font-bold text-green-600">{b.emissionIntensity ?? "N/A"} tCO₂/t</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
               <div className="mb-6"><YearByYearTable companies={COMPANIES} /></div>
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <CreditPriceChart />
