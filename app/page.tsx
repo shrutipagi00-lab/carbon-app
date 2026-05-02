@@ -1338,7 +1338,7 @@ export default function Home() {
     else if (q) setSearchErr("Not found. Try: Tata Steel, JSW Steel, Reliance, Hindalco...");
   };
 
-  const FOREIGN_AS_COMPANIES = FOREIGN_BENCHMARKS.map(b => ({
+  const FOREIGN_AS_COMPANIES: Company[] = FOREIGN_BENCHMARKS.map(b => ({
     id: b.id, name: b.name, sector: b.sector, country: b.country, isForeign: true,
     fy22: b.fy22, fy23: b.fy23, fy24: b.fy24, fy25: b.fy25, fy26: b.fy26,
     emissionIntensity: b.emissionIntensity ?? 0,
@@ -1355,7 +1355,7 @@ export default function Home() {
     netZeroTarget: b.netZeroTarget, keyTechnology: b.keyTech, globalInsight: b.insight,
     color: b.color, source: b.source,
   }));
-  const ALL_COMPANIES = [...COMPANIES, ...FOREIGN_AS_COMPANIES];
+  const ALL_COMPANIES: Company[] = [...COMPANIES, ...FOREIGN_AS_COMPANIES];
   const sectorCompanies = activeSector ? ALL_COMPANIES.filter(c => c.sector === activeSector) : [];
 
   if (view === "landing") return <LandingPage onEnter={() => setView("home")} />;
