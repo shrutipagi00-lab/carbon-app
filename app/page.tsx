@@ -739,15 +739,16 @@ function CompanyDashboard({ co, creditPrice, setCreditPrice }: {
       <div className="rounded-b-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between flex-wrap gap-3 mb-6">
           <div>
-            <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">{co.sector} · India · FY 2022-2026</p>
+            <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">{co.sector} · {co.country} · FY 2022-2026</p>
             <h2 className="text-2xl font-bold text-gray-800">{co.name}</h2>
             <p className="text-xs text-gray-400 mt-1">{co.source}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <span className={`text-xs font-bold px-3 py-1 rounded-full border ${s.bg} ${s.text} ${s.border}`}>{s.label}</span>
-            <span className={`text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5 ${c.bg} ${c.text}`}>
+            {co.isForeign && <span className="text-xs font-bold px-3 py-1 rounded-full border bg-blue-100 text-blue-700 border-blue-300">🌍 Global Benchmark — NOT Indian PAT DC</span>}
+            {!co.isForeign && <span className={`text-xs font-bold px-3 py-1 rounded-full border ${s.bg} ${s.text} ${s.border}`}>{s.label}</span>}
+            {!co.isForeign && <span className={`text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5 ${c.bg} ${c.text}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />{co.compliance} Compliance Pressure
-            </span>
+            </span>}
             <span className="text-xs text-gray-500 border border-gray-200 px-2 py-1 rounded-full">Net Zero: {co.netZeroTarget}</span>
           </div>
         </div>
@@ -785,10 +786,10 @@ function CompanyDashboard({ co, creditPrice, setCreditPrice }: {
         </div>
 
         <div className="mb-4"><EmissionTrendChart co={co} /></div>
-        <div className="mb-4"><SensitivitySlider creditPrice={creditPrice} setCreditPrice={setCreditPrice} /></div>
+        {!co.isForeign && <div className="mb-4"><SensitivitySlider creditPrice={creditPrice} setCreditPrice={setCreditPrice} /></div>}
 
-        {/* Buy vs Invest */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        {/* Buy vs Invest — Indian DCs only */}
+        {!co.isForeign && <div className="grid grid-cols-2 gap-3 mb-4">
           <div className={`rounded-xl p-4 border-2 ${buyIsCheaper ? "border-blue-300 bg-blue-50" : "border-gray-200 bg-gray-50"}`}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-gray-600 uppercase">Buy Credits</p>
@@ -805,10 +806,10 @@ function CompanyDashboard({ co, creditPrice, setCreditPrice }: {
             <p className={`text-2xl font-bold mb-1 ${!buyIsCheaper ? "text-green-600" : "text-gray-400"}`}>₹{co.investCost} Cr</p>
             <p className="text-xs text-gray-400">One-time capex · Payback ~{co.payback} yrs</p>
           </div>
-        </div>
+        }
 
-        {/* Year-by-year strategy */}
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 mb-4">
+        {/* Year-by-year strategy — Indian DCs only */}
+        {!co.isForeign && <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 mb-4">
           <p className="text-xs font-bold text-gray-500 uppercase mb-3">Year-by-Year Strategy (from Excel data)</p>
           <div className="grid grid-cols-4 gap-2">
             {[{ y: "FY23 @₹800", s: co.strategyFY23, cost: co.buyCostFY23 }, { y: "FY24 @₹1,000", s: co.strategyFY24, cost: co.buyCostFY24 }, { y: "FY25 @₹1,500", s: co.strategyFY25, cost: co.buyCostFY25 }, { y: "FY26 @₹2,500", s: co.strategyFY26, cost: co.buyCostFY26 }].map(item => {
@@ -822,18 +823,18 @@ function CompanyDashboard({ co, creditPrice, setCreditPrice }: {
               );
             })}
           </div>
-        </div>
+        }
 
         <div className="space-y-3">
           <div className="rounded-xl p-4 border border-gray-200 bg-gray-50">
-            <p className="text-xs font-bold text-gray-400 uppercase mb-2">Compliance & PAT Detail</p>
+            <p className="text-xs font-bold text-gray-400 uppercase mb-2">{co.isForeign ? "About This Company" : "Compliance & PAT Detail"}</p>
             <p className="text-sm text-gray-600">{co.complianceDetail}</p>
           </div>
           <div className="rounded-xl p-4 border border-gray-200 bg-gray-50">
-            <p className="text-xs font-bold text-gray-400 uppercase mb-2">Carbon Credit Position</p>
+            <p className="text-xs font-bold text-gray-400 uppercase mb-2">{co.isForeign ? "CBAM Status" : "Carbon Credit Position"}</p>
             <p className="text-sm text-gray-600">{co.creditPosition}</p>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          {!co.isForeign && <div className="grid grid-cols-3 gap-2">
             <div className="bg-red-50 rounded-xl p-3 border border-red-200 text-center">
               <p className="text-xs text-gray-500 mb-1">Penalty Exposure</p>
               <p className="text-xs font-bold text-red-600">₹10L + ₹10K/day</p>
@@ -846,7 +847,17 @@ function CompanyDashboard({ co, creditPrice, setCreditPrice }: {
               <p className="text-xs text-gray-500 mb-1">Key Technology</p>
               <p className="text-xs font-bold text-blue-600">{co.keyTechnology}</p>
             </div>
-          </div>
+          </div>}
+          {co.isForeign && <div className="grid grid-cols-2 gap-2">
+            <div className="bg-blue-50 rounded-xl p-3 border border-blue-200 text-center">
+              <p className="text-xs text-gray-500 mb-1">Key Technology</p>
+              <p className="text-xs font-bold text-blue-600">{co.keyTechnology}</p>
+            </div>
+            <div className="bg-green-50 rounded-xl p-3 border border-green-200 text-center">
+              <p className="text-xs text-gray-500 mb-1">Net Zero Target</p>
+              <p className="text-xs font-bold text-green-600">{co.netZeroTarget}</p>
+            </div>
+          </div>}
           <div className="rounded-xl p-4 border border-green-200 bg-green-50">
             <p className="text-xs font-bold text-green-600 uppercase mb-2">🌍 Global Benchmark Insight</p>
             <p className="text-sm text-gray-700">{co.globalInsight}</p>
@@ -1327,7 +1338,25 @@ export default function Home() {
     else if (q) setSearchErr("Not found. Try: Tata Steel, JSW Steel, Reliance, Hindalco...");
   };
 
-  const sectorCompanies = activeSector ? COMPANIES.filter(c => c.sector === activeSector) : [];
+  const FOREIGN_AS_COMPANIES = FOREIGN_BENCHMARKS.map(b => ({
+    id: b.id, name: b.name, sector: b.sector, country: b.country, isForeign: true,
+    fy22: b.fy22, fy23: b.fy23, fy24: b.fy24, fy25: b.fy25, fy26: b.fy26,
+    emissionIntensity: b.emissionIntensity ?? 0,
+    patTarget: 0, gap: 0, compliance: "Moderate" as Compliance,
+    escertDeficit: 0, investCost: 0, payback: 0,
+    buyCostFY23: 0, buyCostFY24: 0, buyCostFY25: 0, buyCostFY26: 0, breakEvenPrice: 0,
+    cbamExposure: 0, strategy: "INVEST" as Strategy,
+    strategyFY23: "INVEST" as Strategy, strategyFY24: "INVEST" as Strategy,
+    strategyFY25: "INVEST" as Strategy, strategyFY26: "INVEST" as Strategy,
+    strategyDetail: b.keyTech,
+    complianceDetail: `${b.name} is a foreign benchmark company based in ${b.country}. NOT subject to Indian PAT scheme. Data from published sustainability reports.`,
+    creditPosition: b.cbamStatus,
+    finalRec: b.insight,
+    netZeroTarget: b.netZeroTarget, keyTechnology: b.keyTech, globalInsight: b.insight,
+    color: b.color, source: b.source,
+  }));
+  const ALL_COMPANIES = [...COMPANIES, ...FOREIGN_AS_COMPANIES];
+  const sectorCompanies = activeSector ? ALL_COMPANIES.filter(c => c.sector === activeSector) : [];
 
   if (view === "landing") return <LandingPage onEnter={() => setView("home")} />;
 
@@ -1367,19 +1396,19 @@ export default function Home() {
           <p className="text-xs text-gray-400 uppercase tracking-widest mb-2 px-2">Industries</p>
           {SECTORS.map(sector => {
             const isActive = activeSector === sector;
-            const scos = COMPANIES.filter(c => c.sector === sector);
+            const scos = ALL_COMPANIES.filter(c => c.sector === sector);
             return (
               <div key={sector} className="mb-1">
                 <button onClick={() => { setActiveSector(sector); setActiveCompany(null); setView("sector"); }}
                   className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors flex items-center justify-between ${isActive ? "bg-green-100 text-green-700 font-semibold" : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"}`}>
                   <span>{SECTOR_ICONS[sector]} {sector}</span>
-                  <span className="text-gray-400">{scos.length}</span>
-                </button>
+                  <span className="text-gray-400">{scos.length}</span>                </button>
                 {isActive && scos.map(co => (
                   <button key={co.id} onClick={() => { setActiveCompany(co); setView("company"); }}
                     className={`w-full text-left pl-7 pr-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-2 ${activeCompany?.id === co.id ? "text-green-700 font-semibold" : "text-gray-400 hover:text-gray-700"}`}>
                     <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: co.color }} />
                     {co.name}
+                    {co.isForeign && <span className="text-blue-500 ml-auto">🌍</span>}
                   </button>
                 ))}
               </div>
@@ -1479,9 +1508,10 @@ export default function Home() {
               {/* Sector tiles */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 {SECTORS.map(sector => {
-                  const cos = COMPANIES.filter(c => c.sector === sector);
-                  const totalGap = cos.reduce((s, c) => s + c.gap, 0);
-                  const totalCost = cos.reduce((s, c) => s + calcBuyCost(c.escertDeficit, creditPrice), 0);
+                  const cos = ALL_COMPANIES.filter(c => c.sector === sector);
+                  const indianCos = COMPANIES.filter(c => c.sector === sector);
+                  const totalGap = indianCos.reduce((s, c) => s + c.gap, 0);
+                  const totalCost = indianCos.reduce((s, c) => s + calcBuyCost(c.escertDeficit, creditPrice), 0);
                   const foreign = FOREIGN_BENCHMARKS.filter(b => b.sector === sector)[0];
                   return (
                     <button key={sector}
@@ -1489,7 +1519,7 @@ export default function Home() {
                       className="rounded-2xl border border-gray-200 bg-white p-5 text-left hover:border-green-300 hover:shadow-md transition-all group shadow-sm">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-2xl">{SECTOR_ICONS[sector]}</span>
-                        <span className="text-xs text-gray-400 border border-gray-200 px-2 py-0.5 rounded-full">{cos.length} Indian + 🌍 1 benchmark</span>
+                        <span className="text-xs text-gray-400 border border-gray-200 px-2 py-0.5 rounded-full">{indianCos.length} Indian + 🌍 1</span>
                       </div>
                       <h3 className="text-base font-bold text-gray-800 mb-1">{sector}</h3>
                       <p className="text-xs text-gray-500 mb-3">{cos.map(c => c.name).join(" · ")}</p>
@@ -1512,13 +1542,13 @@ export default function Home() {
 
               {/* Quick access */}
               <div className="text-center mb-6">
-                <p className="text-xs text-gray-400 mb-3">Quick access — all 12 Indian companies</p>
+                <p className="text-xs text-gray-400 mb-3">Quick access — 12 Indian DCs + 4 Global Benchmarks</p>
                 <div className="flex flex-wrap gap-2 justify-center">
-                  {COMPANIES.map(co => (
+                  {ALL_COMPANIES.map(co => (
                     <button key={co.id}
                       onClick={() => { setActiveCompany(co); setActiveSector(co.sector); setView("company"); }}
-                      className="border border-gray-200 bg-white text-gray-500 text-xs font-medium px-3 py-1.5 rounded-full hover:border-green-300 hover:text-green-700 transition-colors shadow-sm">
-                      {co.name}
+                      className={`border text-xs font-medium px-3 py-1.5 rounded-full transition-colors shadow-sm ${co.isForeign ? "border-blue-300 bg-blue-50 text-blue-600 hover:border-blue-400 hover:text-blue-800" : "border-gray-200 bg-white text-gray-500 hover:border-green-300 hover:text-green-700"}`}>
+                      {co.isForeign && "🌍 "}{co.name}
                     </button>
                   ))}
                 </div>
